@@ -39,7 +39,7 @@ function setWebApiKey(key) {
 
 function validateApiKey_(params) {
   const storedKey = getWebApiKey_();
-  if (!storedKey) return true; // 키 미설정 시 통과
+  if (!storedKey) return true; // 키 미설정 시 전체 허용
   return String(params.key || '') === storedKey;
 }
 

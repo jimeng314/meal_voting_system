@@ -449,15 +449,11 @@
     <h2>⚙️ Apps Script URL 설정</h2>
     <p>
       Google Apps Script Web App 배포 URL을 입력하세요.<br>
-      한 번 설정하면 브라우저에 저장됩니다.<br><br>
-      <strong>배포 방법:</strong> Apps Script 편집기 → 배포 → 새 배포 → 웹 앱<br>
-      실행 계정: 나 / 액세스: 모든 사람
+      한 번 설정하면 브라우저에 저장됩니다.
     </p>
     <input type="url" id="setupUrl"
       placeholder="https://script.google.com/macros/s/.../exec"
       autocomplete="off" spellcheck="false" />
-    <input type="text" id="setupKey"
-      placeholder="API 키 (설정한 경우에만 입력)" />
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="saveSetup()">저장 후 시작</button>
     </div>
@@ -589,18 +585,19 @@
 
 <script>
 // ===== 설정 =====
-const STORAGE_URL_KEY = 'meal_vote_script_url';
-const STORAGE_KEY_KEY = 'meal_vote_api_key';
-let SCRIPT_URL = '';
-let API_KEY    = '';
+// ✅ Apps Script 웹 앱 배포 URL을 아래에 직접 입력하면 팀원 전원이 별도 설정 없이 바로 사용 가능
+// 비워두면 첫 접속 시 URL 입력 모달이 표시됩니다.
+const HARDCODED_URL = '';  // 예: 'https://script.google.com/macros/s/AKfy.../exec'
 
-let state = null;        // 서버에서 받은 데이터
+const STORAGE_URL_KEY = 'meal_vote_script_url';
+let SCRIPT_URL = '';
+
+let state = null;
 let refreshTimer = null;
 
 // ===== 초기화 =====
 window.addEventListener('DOMContentLoaded', () => {
-  SCRIPT_URL = localStorage.getItem(STORAGE_URL_KEY) || '';
-  API_KEY    = localStorage.getItem(STORAGE_KEY_KEY) || '';
+  SCRIPT_URL = HARDCODED_URL || localStorage.getItem(STORAGE_URL_KEY) || '';
 
   if (!SCRIPT_URL) {
     document.getElementById('setupModal').classList.remove('hidden');
@@ -611,12 +608,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function saveSetup() {
   const url = document.getElementById('setupUrl').value.trim();
-  const key = document.getElementById('setupKey').value.trim();
   if (!url) { showToast('URL을 입력해주세요.', 'error'); return; }
   SCRIPT_URL = url;
-  API_KEY    = key;
   localStorage.setItem(STORAGE_URL_KEY, url);
-  localStorage.setItem(STORAGE_KEY_KEY, key);
   document.getElementById('setupModal').classList.add('hidden');
   startApp();
 }
@@ -624,7 +618,6 @@ function saveSetup() {
 function showSetupModal(prefill) {
   if (prefill) {
     document.getElementById('setupUrl').value = SCRIPT_URL;
-    document.getElementById('setupKey').value = API_KEY;
   }
   document.getElementById('setupModal').classList.remove('hidden');
 }
@@ -639,7 +632,6 @@ function startApp() {
 async function callApi(params) {
   const url = new URL(SCRIPT_URL);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-  if (API_KEY) url.searchParams.set('key', API_KEY);
 
   const resp = await fetch(url.toString(), {
     redirect: 'follow',

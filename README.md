@@ -43,23 +43,22 @@ meal_voting_system/
    - 액세스 권한: **모든 사람** (또는 조직 내 사용자)
 4. 배포 후 나타나는 **웹 앱 URL** 복사 (`https://script.google.com/macros/s/.../exec`)
 
-> **API 키 설정 (선택사항)**: Apps Script 편집기에서 `setWebApiKey('원하는키')` 함수를 한 번 실행하면
-> 이후 웹 화면에서 API 키를 입력해야만 접근 가능합니다.
+### 2단계: GitHub Repository Secret 등록
 
-### 2단계: GitHub Pages 배포
+레포 → **Settings → Secrets and variables → Actions → New repository secret**
 
-1. 이 레포지토리를 GitHub에 push
-2. 레포 Settings → Pages → Branch: `main`, 폴더: `/` (root) 선택 후 저장
-3. 배포된 URL (예: `https://your-org.github.io/meal_voting_system/`) 접속
+| Secret 이름 | 값 |
+|-------------|-----|
+| `APPS_SCRIPT_URL` | 1단계에서 복사한 Apps Script 웹 앱 URL |
 
-### 3단계: 웹 화면에서 URL 설정
+### 3단계: GitHub Pages 배포
 
-1. 웹 화면 첫 접속 시 설정 모달이 자동으로 열림
-2. **1단계**에서 복사한 Apps Script 웹 앱 URL 입력
-3. API 키 설정한 경우 키도 입력
-4. **저장 후 시작** 클릭
+1. 이 레포지토리를 GitHub에 push → Actions 워크플로우 자동 실행
+2. 레포 Settings → Pages → Branch: **`gh-pages`**, 폴더: `/` 선택 후 저장
+3. 배포된 URL (예: `https://your-org.github.io/meal_voting_system/`) 접속하면 바로 사용 가능
 
-> 설정은 브라우저 `localStorage`에 저장되므로 한 번만 입력하면 됩니다.
+> **보안**: `main` 브랜치 소스에는 URL이 빈 문자열로 유지됩니다.
+> GitHub Actions가 배포 시 Secret 값을 주입하여 `gh-pages` 브랜치에만 실제 URL이 들어갑니다.
 
 ---
 
