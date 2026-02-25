@@ -625,7 +625,19 @@ function showSetupModal(prefill) {
 function startApp() {
   document.getElementById('app').style.display = '';
   loadState(true);
-  refreshTimer = setInterval(() => loadState(false), 15000);
+
+  refreshTimer = setInterval(() => {
+    // 탭이 백그라운드면 스킵
+    if (document.hidden) return;
+    // 투표 완전 마감 후엔 1분에 1번으로 줄임
+    if (state && state.phase === 'all_locked') return;
+    loadState(false);
+  }, 15000);
+
+  // 탭이 다시 포커스되면 즉시 갱신
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) loadState(false);
+  });
 }
 
 // ===== API 호출 =====
